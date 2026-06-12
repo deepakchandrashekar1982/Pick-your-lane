@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick Your Lane — Find Your Clues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1f2a24;
+    --ink-soft: #4a564f;
+    --ink-faint: #8a9389;
+    --paper: #f7f4ed;
+    --paper-warm: #efe9dc;
+    --line: #ddd6c7;
+    --green: #2f6b4f;
+    --green-deep: #244f3b;
+    --clay: #c8693f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+
+  /* Masthead */
+  header { padding: 48px 0 0; }
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    text-align: center;
+  }
+  .brand-rule {
+    width: 40px; height: 2px; background: var(--clay);
+    margin: 14px auto 0;
+  }
+
+  /* Title */
+  .post-head { padding: 40px 0 28px; text-align: center; }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(30px, 7vw, 44px);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 19px;
+    margin-top: 18px;
+  }
+  .byline {
+    margin-top: 22px;
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* Body prose */
+  .prose p { margin: 0 0 22px; }
+  .prose .lead { font-size: 21px; }
+  .prose em { font-style: italic; }
+  .prose strong { font-weight: 500; }
+  .pull {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 23px;
+    line-height: 1.35;
+    color: var(--green-deep);
+    margin: 8px 0 26px;
+  }
+  hr.soft {
+    border: none;
+    height: 1px;
+    background: var(--line);
+    margin: 40px auto;
+    width: 80px;
+  }
+
+  /* Tool intro */
+  .tool-intro {
+    background: var(--paper-warm);
+    border-radius: 16px;
+    padding: 32px 28px;
+    margin: 36px 0;
+    text-align: center;
+  }
+  .tool-intro h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .tool-intro p { font-size: 17px; color: var(--ink-soft); margin: 0; }
+
+  /* Questions */
+  .q-block {
+    border-top: 1px solid var(--line);
+    padding: 36px 0 8px;
+  }
+  .q-num {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin-bottom: 12px;
+  }
+  .q-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .q-lit p { margin: 0 0 18px; font-size: 18px; color: var(--ink-soft); }
+  .q-lit p:last-child { margin-bottom: 0; }
+  .q-lit strong { color: var(--ink); font-weight: 500; }
+
+  textarea {
+    width: 100%;
+    margin-top: 22px;
+    min-height: 96px;
+    background: #fffdf8;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-family: 'Newsreader', serif;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { outline: none; border-color: var(--green); }
+  textarea::placeholder { color: var(--ink-faint); font-style: italic; }
+
+  /* Reveal button */
+  .reveal-zone {
+    border-top: 1px solid var(--line);
+    padding: 40px 0 16px;
+    text-align: center;
+  }
+  .btn {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 16px 38px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:hover { background: var(--green-deep); }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .reveal-hint { font-size: 15px; color: var(--ink-faint); margin-top: 14px; font-style: italic; }
+
+  /* Result */
+  .result {
+    display: none;
+    margin: 16px 0 0;
+    background: var(--paper-warm);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+  .result.show { display: block; animation: rise 0.5s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .result h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 18px;
+    color: var(--ink);
+  }
+  .result-body p { margin: 0 0 16px; font-size: 18px; color: var(--ink); }
+  .result-body p:last-child { margin: 0; }
+  .result-sig {
+    margin-top: 22px;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+  .loading { font-style: italic; color: var(--ink-soft); font-size: 17px; }
+  .dot { display: inline-block; animation: blink 1.4s infinite; }
+  .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+  @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+
+  .retry-row { margin-top: 18px; }
+  .btn-small {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15px;
+    background: var(--clay);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    cursor: pointer;
+  }
+  .btn-small:hover { opacity: 0.9; }
+  .safe-note {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  /* World peek */
+  .peek {
+    border-top: 1px solid var(--line);
+    margin-top: 44px;
+    padding: 32px 0 12px;
+  }
+  .peek-label {
+    font-family: 'Fraunces', serif;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--clay); margin-bottom: 12px;
+  }
+  .peek p { font-size: 18px; color: var(--ink-soft); margin: 0; }
+  .peek strong { color: var(--ink); font-weight: 500; }
+
+  /* Closing */
+  .closing { border-top: 1px solid var(--line); padding: 36px 0; }
+  .closing p { margin: 0 0 20px; }
+  .sign {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--green);
+  }
+  footer {
+    text-align: center;
+    padding: 32px 0 60px;
+    font-size: 14px;
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">Pick Your Lane</div>
+    <div class="brand-rule"></div>
+  </header>
+
+  <div class="post-head">
+    <h1>6 questions that tell you more than any career test</h1>
+    <div class="subtitle">The second post in the Pick Your Lane series.</div>
+    <div class="byline">By Dee</div>
+  </div>
+
+  <article class="prose">
+    <p class="lead">In the last post we talked about clues. That one thing that pulls you in without effort. The thing that makes you forget to check your phone.</p>
+    <p>But maybe you read that and thought — "okay, but I still don't know what my clue is."</p>
+    <p>Fair enough. So let's find it.</p>
+    <p>Not with a fancy career test that spits out "you should be an accountant" after 40 confusing questions. Just six honest questions. No right answers. No scores.</p>
+
+    <div class="tool-intro">
+      <h2>Find your clues</h2>
+      <p>Read each question slowly. Then write whatever comes to mind, right there in the box. When you're done, I'll tell you what I noticed.</p>
+    </div>
+  </article>
+
+  <!-- QUESTIONS -->
+  <section id="questions">
+
+    <div class="q-block">
+      <div class="q-num">Question 1</div>
+      <div class="q-title">What makes you forget to check your phone?</div>
+      <div class="q-lit">
+        <p>Not what sounds impressive. Not what your parents want to hear. The real answer.</p>
+        <p>Maybe you lose track of time when you're drawing. Or mid-game, working out the next move. Or explaining something to a friend until an hour has gone by.</p>
+        <p>That thing — whatever it is — isn't a distraction. <strong>It's a signal.</strong> Even if it sounds silly. Especially if it sounds silly.</p>
+      </div>
+      <textarea data-q="1" placeholder="Write whatever comes to mind..."></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Question 2</div>
+      <div class="q-title">What do you do when you have nothing to do?</div>
+      <div class="q-lit">
+        <p>No homework. No plans. No one telling you what's next. Just you and a free afternoon.</p>
+        <p>Do you read? Reorganise your room for no reason? Call a friend and talk for two hours? Kick a ball? Fall into a YouTube rabbit hole about space or engines? Draw something random?</p>
+        <p>That unguarded moment — when nobody's watching and nothing's expected — <strong>is the most honest version of you.</strong></p>
+      </div>
+      <textarea data-q="2" placeholder="Be honest — even if it sounds boring..."></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Question 3</div>
+      <div class="q-title">What kind of problems do you like solving?</div>
+      <div class="q-lit">
+        <p>And if your last answer was "I just watch stuff" — that's okay. But what are you watching? Cooking, football breakdowns, tech reviews, true crime, DIY builds? Even that is a clue.</p>
+        <p>Now — what kind of problem pulls you in? A puzzle you can't put down? A fight between friends you end up mediating? A broken gadget you have to open up? A story that nags until you figure out the ending?</p>
+        <p>Logical, human, mechanical, creative. <strong>The ones that don't feel like work — those are yours.</strong></p>
+      </div>
+      <textarea data-q="3" placeholder="Big or small, anywhere..."></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Question 4</div>
+      <div class="q-title">What do people come to you for?</div>
+      <div class="q-lit">
+        <p>The other questions looked inward. This one looks outward — at how people already see you.</p>
+        <p>When friends have a problem, what do they bring you? "Help me figure this out"? "I just need to talk"? "Can you make this look better"? "Can you explain this"?</p>
+        <p>Or maybe no one comes to you yet — that's fine, you're 13. But even at home: are you the fixer, the listener, the explainer, the organiser, the entertainer? <strong>You already have a reputation. That's a clue.</strong></p>
+      </div>
+      <textarea data-q="4" placeholder="What friends or family ask you for..."></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Question 5</div>
+      <div class="q-title">What would you do if marks didn't matter?</div>
+      <div class="q-lit">
+        <p>The dangerous question — because the honest answer might surprise you.</p>
+        <p>Imagine no report card. No ranks. No comparison with the cousin who got 95. Just you and whatever you'd spend your time on.</p>
+        <p>Cooking all day? Writing stories nobody asked for? Building with your hands? Starting a small business? Coding a game? Music for hours?</p>
+        <p>Notice what came in the <strong>first three seconds</strong> — not the "but that's not a real career" thought right after. Write the first one down before it disappears.</p>
+      </div>
+      <textarea data-q="5" placeholder="First thought. Don't filter it..."></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Question 6</div>
+      <div class="q-title">What angers you about the world?</div>
+      <div class="q-lit">
+        <p>Last one, and it goes deep. Adults tell you to calm down, be positive, don't complain. But here's the secret — <strong>the things that anger you are the things you care about most.</strong></p>
+        <p>Stray animals suffering while everyone walks past? Someone treated unfairly while people just watch? Things disorganised and nobody fixing them? Kids without good schools? Pollution, fake news, food wastage?</p>
+        <p>That anger is a value. The doctor who couldn't stand watching people suffer. The journalist who couldn't stand lies. The founder who couldn't stand a problem nobody was solving. <strong>They all started here. What's yours?</strong></p>
+      </div>
+      <textarea data-q="6" placeholder="Nothing's too small or too big..."></textarea>
+    </div>
+
+    <div class="q-block" style="border-bottom:none;">
+      <div class="q-lit">
+        <p>One more thing worth knowing — some of the careers your parents talk about may look very different by the time you're 25. AI is changing nearly everything. But here's what won't change: the human behind the work. Your curiosity, your way of seeing problems, the things you can't stop caring about. <strong>Those will matter more, not less.</strong></p>
+      </div>
+    </div>
+
+    <div class="reveal-zone">
+      <button class="btn" id="revealBtn">Show me my clues</button>
+      <div class="reveal-hint">Your answers stay private. Nothing is saved with your name.</div>
+    </div>
+
+    <div class="result" id="result">
+      <h3>What I noticed</h3>
+      <div class="result-body" id="resultBody"></div>
+      <div class="result-sig">— Dee</div>
+    </div>
+
+  </section>
+
+  <div class="peek">
+    <div class="peek-label">A world worth exploring</div>
+    <p><strong>Sound Designer.</strong> Some people's entire job is creating the sounds in films and video games — footsteps, explosions, the hum of a spaceship. Most of them never knew this job existed until late in school. More on this world soon.</p>
+  </div>
+
+  <div class="closing">
+    <p>If even one of those questions made you pause — made you think "huh, I never looked at it that way" — that's the spark. Hold onto it.</p>
+    <p>In the next post, I'll introduce you to real people who paid attention to their clues. Where they started. Where they ended up. You might be surprised.</p>
+    <p class="sign">See you in the next one. — Dee</p>
+  </div>
+
+  <footer>
+    Pick Your Lane is written from real experience and real conversations. Always.
+  </footer>
+
+</div>
+
+<script>
+  // ---- Answer state, held safely in memory the moment anything is typed ----
+  const answers = { 1:"",2:"",3:"",4:"",5:"",6:"" };
+  const questionTitles = {
+    1: "What makes you forget to check your phone?",
+    2: "What do you do when you have nothing to do?",
+    3: "What kind of problems do you like solving?",
+    4: "What do people come to you for?",
+    5: "What would you do if marks didn't matter?",
+    6: "What angers you about the world?"
+  };
+
+  document.querySelectorAll('textarea[data-q]').forEach(t => {
+    t.addEventListener('input', e => {
+      answers[e.target.dataset.q] = e.target.value;
+    });
+  });
+
+  const revealBtn = document.getElementById('revealBtn');
+  const result = document.getElementById('result');
+  const resultBody = document.getElementById('resultBody');
+
+  function buildPrompt() {
+    const filled = Object.keys(answers)
+      .filter(k => answers[k].trim())
+      .map(k => `Q${k} — ${questionTitles[k]}\nAnswer: ${answers[k].trim()}`)
+      .join("\n\n");
+    return filled;
+  }
+
+  function showLoading() {
+    result.classList.add('show');
+    resultBody.innerHTML = '<p class="loading">Dee is reading your answers<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderText(text) {
+    const paras = text.split(/\n\n+/).filter(Boolean).map(p => `<p>${p.trim()}</p>`).join("");
+    resultBody.innerHTML = paras;
+  }
+
+  // Failure path: answers are NEVER lost. They stay in the boxes + we show a retry.
+  function renderFailure() {
+    resultBody.innerHTML = `
+      <p>I couldn't reach my side of things just now — that's on the connection, not on you.</p>
+      <p><strong>Everything you wrote is still here, exactly as you left it.</strong> Nothing's lost. Let's try again.</p>
+      <div class="retry-row"><button class="btn-small" id="retryBtn">Try again</button></div>
+      <p class="safe-note">Your answers are safe in the boxes above — scroll up any time to see them.</p>
+    `;
+    document.getElementById('retryBtn').addEventListener('click', runReflection);
+  }
+
+  async function runReflection() {
+    const filled = buildPrompt();
+
+    if (!filled) {
+      result.classList.add('show');
+      resultBody.innerHTML = `<p>You haven't written anything yet — and that's okay. Scroll up, sit with even one question, and come back when something comes to mind. The questions will wait.</p>`;
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    showLoading();
+    revealBtn.disabled = true;
+
+    try {
+      const res = await fetch("/api/reflect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: filled })
+      });
+      if (!res.ok) { renderFailure(); revealBtn.disabled = false; return; }
+      const data = await res.json();
+      const text = (data.reflection || "").trim();
+      if (!text) { renderFailure(); revealBtn.disabled = false; return; }
+      renderText(text);
+      revealBtn.disabled = false;
+    } catch (e) {
+      renderFailure();
+      revealBtn.disabled = false;
+    }
+  }
+
+  revealBtn.addEventListener('click', runReflection);
+</script>
+</body>
+</html>
