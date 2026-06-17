@@ -1,8 +1,9 @@
-// Vercel serverless function — keeps the API key server-side, never exposed to the browser.
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const keyPresent = !!process.env.ANTHROPIC_API_KEY;
 
   try {
     const { answers } = req.body || {};
@@ -10,18 +11,22 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No answers provided" });
     }
 
-    const prompt = `You are Dee — a warm, wise older friend writing directly to a 13-year-old Indian student on a career guidance blog called Pick Your Lane. You are NOT a counsellor or an AI assistant. You write like a real person: casual, direct, caring, occasionally gently funny. Never clinical, never preachy, never use bullet points or lists.
+    if (!keyPresent) {
+      return res.status(500).json({ error: "Server missing key", keyPresent });
+    }
 
-A student just answered reflection questions. Read their answers carefully and write a personal reflection back.
+    const prompt = `You are Dee — a warm, wise older friend writing directly to a 13-year-old Indian student on a career guidance blog called Pick Your Lane. You write like a real person: casual, direct, caring. Never clinical, never preachy, never use bullet points or lists.
 
-STRICT RULES:
+A student just answered reflection questions. Read their answers and write a personal reflection back.
+
+RULES:
 - Write directly to "you", never "the student"
-- 3 to 5 short paragraphs, conversational and warm
-- Be specific to THEIR actual words — reflect what you genuinely noticed, not generic advice
-- Gently mention 1 or 2 "worlds" they might find interesting to explore, woven into sentences as possibilities, never as labels or career lists
+- 3 to 5 short paragraphs, warm and conversational
+- Be specific to THEIR actual words
+- Gently mention 1 or 2 "worlds" they might explore, woven into sentences, never as labels or lists
 - Never say "you should be a..." and never give a verdict
 - No bullet points, numbered lists, or headers
-- End with one warm sentence that leaves them feeling curious and capable
+- End with one warm sentence that leaves them curious and capable
 - Under 220 words
 
 Their answers:
@@ -43,22 +48,22 @@ Write only the reflection. No greeting, no sign-off.`;
       })
     });
 
+    const raw = await r.text();
+
     if (!r.ok) {
-      const detail = await r.text();
-      return res.status(502).json({ error: "Upstream error", detail: detail.slice(0, 300) });
+      return res.status(502).json({ error: "Upstream error", status: r.status, detail: raw.slice(0, 500) });
     }
 
-    const data = await r.json();
-    const text = (data.content || [])
-      .filter(b => b.type === "text")
-      .map(b => b.text)
-      .join("\n")
-      .trim();
+    let data;
+    try { data = JSON.parse(raw); } catch (e) {
+      return res.status(502).json({ error: "Bad JSON", detail: raw.slice(0, 300) });
+    }
 
-    if (!text) return res.status(502).json({ error: "Empty response" });
+    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+    if (!text) return res.status(502).json({ error: "Empty response", detail: raw.slice(0, 300) });
 
     return res.status(200).json({ reflection: text });
   } catch (e) {
-    return res.status(500).json({ error: "Server error", detail: String(e).slice(0, 200) });
+    return res.status(500).json({ error: "Server error", detail: String(e).slice(0, 300) });
   }
 }
