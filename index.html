@@ -466,7 +466,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: filled })
       });
-           if (!res.ok) { const err = await res.json().catch(()=>({})); resultBody.innerHTML = '<p>Debug: ' + (err.status||res.status) + ' — ' + (err.detail||err.error||'unknown') + '</p>'; revealBtn.disabled = false; return; }
+                 if (!res.ok) { renderFailure(); revealBtn.disabled = false; return; }
+
 
       const data = await res.json();
       const text = (data.reflection || "").trim();
